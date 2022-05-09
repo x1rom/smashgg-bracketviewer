@@ -1,11 +1,14 @@
 const express = require('express');
 const app = express();
 const pug = require('pug');
+const cors = require('cors');
 
+const port = 3000;
 
 app.set('view engine', 'pug');
 
-const port = 3000;
+app.use(express.static('public'));
+app.use(cors());
 
 //index
 app.get('/', (req,res)=>{
