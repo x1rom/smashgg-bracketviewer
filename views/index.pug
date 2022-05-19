@@ -29,11 +29,20 @@ html(lang="en")
                 label(class="form-label mt-5") Select Event
                 div(class="dropdown")
                     button(class="btn btn-secondary dropdown-toggle disabled" type="button" id="eventSelectorButton" data-bs-toggle="dropdown" aria-expanded="false") Select Event
-                    ul(class="dropdown-menu" id="eventList")
-                        li
-                            button(class="dropdown-item") Singles
-                        li
-                            button(class="dropdown-item") Doubles                      
+                    ul(class="dropdown-menu" id="eventList")        
+                label(class="form-label mt-5") Select Phase
+                div(class="dropdown")
+                    button(class="btn btn-secondary dropdown-toggle disabled" type="button" id="phaseSelectorButton" data-bs-toggle="dropdown" aria-expanded="false") Select Phase
+                    ul(class="dropdown-menu" id="phaseList")   
 
             div(class="container-fluid border p-5" id="appearanceContainer")
+                label(class="form-label") Select appearance
+                div(class=dropdown)
+                    button(class="btn btn-secondary dropdown-toggle" type="button" id="appearanceSelectorButton" data-bs-toggle="dropdown" aria-expanded="false") Select Appearance
+                    ul(class="dropdown-menu" id="appearanceList")
+                        each Appearance in AppearanceList
+                            li 
+                                button(class="dropdown-item" type="button" onclick=appearance(){config.js})
+
+            button(class="btn btn-secondary mt-5 disabled" type="button" id="bracketViewer") View Bracket
         

@@ -41,19 +41,12 @@ $(function(){
     //enter Tournament Slug
     $('#tournamentSlug').on('change', function(){
         if(APIToken != ''){
-            var APIquery = 'query TournamentQuery($slug:String){tournament(slug: $slug){events{name, id}}}';
-            var APIvariables = '{"slug": "' + $('#tournamentSlug').val() + '"}';
+            let APIquery = 'query TournamentQuery($slug:String){tournament(slug: $slug){events{name, id}}}';
+            let APIvariables = '{"slug": "' + $('#tournamentSlug').val() + '"}';
             APIReqest(APIToken, APIquery, APIvariables, function(response){
-                if(response.data.tournament == null){
-                    $('#eventSelectorButton').addClass("disabled");
-                    $('#eventSelectorButton').removeClass("enabled");
-                }else{
-                    $('#eventSelectorButton').addClass("enabled");
-                    $('#eventSelectorButton').removeClass("disabled");
-                    var events = response.data.tournament.events;
-                    localStorage.setItem("events", JSON.stringify(events));
-                    handleEventButtons(events);
-                }
+                let events = response.data.tournament.events;
+                localStorage.setItem("events", JSON.stringify(events));
+                handleEventButtons(events);
             });
         }
         localStorage.setItem("slug", $('#tournamentSlug').val());
@@ -61,24 +54,66 @@ $(function(){
     slug = localStorage.getItem("slug");
     $('#tournamentSlug').val(slug);
 
-    var events = JSON.parse(localStorage.getItem("events"));
-    if(events != null){
-        $('#eventSelectorButton').addClass("enabled");
-        $('#eventSelectorButton').removeClass("disabled");
-    }
+    let events = JSON.parse(localStorage.getItem("events"));
     handleEventButtons(events);
-    
+    let phases = JSON.parse(localStorage.getItem("phases"));
+    handlePhaseButtons(phases);
 });
 
 function handleEventButtons(events){
+    if(events != null){
+        $('#eventSelectorButton').addClass("enabled");
+        $('#eventSelectorButton').removeClass("disabled");
+    }else{
+        $('#eventSelectorButton').addClass("disabled");
+        $('#eventSelectorButton').removeClass("enabled");
+    }
+    let selectedEvent = localStorage.getItem("eventSelector");
+    if(selectedEvent != null) {
+        $('#eventSelectorButton').text(selectedEvent);
+    }
     $('#eventList').empty();
     events.forEach(event => {
         $('#eventList').append('<li><button class="dropdown-item">' + event.name + ' (event id: ' + event.id + ')</button></li>');
     });
     $('#eventList').find('button').each(function(){
         this.addEventListener('click', function(){
-            $('#eventSelectorButton').text($(this).text());
-            
+            let eventText = $(this).text();
+            $('#eventSelectorButton').text(eventText);
+            localStorage.setItem("eventSelector", eventText);
+
+            let APIquery = 'query PhaseQuery($eventId: ID){event(id: $eventId){phases {name,id}}}';
+            let eventId = eventText.substring(eventText.search('\(event id: \d*\)')+10, eventText.length-1);
+            let APIvariables = '{"eventId": ' + eventId + '}';
+            APIReqest(APIToken, APIquery, APIvariables, function(response){
+                let phases = response.data.event.phases;
+                localStorage.setItem("phases", JSON.stringify(phases));
+                handlePhaseButtons(phases);
+            })
+        });
+    });
+}
+
+function handlePhaseButtons(phases){
+    if(phases != null) {
+        $('#phaseSelectorButton').addClass("enabled");
+        $('#phaseSelectorButton').removeClass("disabled");
+    }else{
+        $('#phaseSelectorButton').addClass("disabled");
+        $('#phaseSelectorButton').removeClass("enabled");
+    }
+    let selectedPhase = localStorage.getItem("phaseSelector");
+    if(selectedPhase != null) {
+        $('#phaseSelectorButton').text(selectedPhase);
+    }
+    $('#phaseList').empty();
+    phases.forEach(phase => {
+        $('#phaseList').append('<li><button class="dropdown-item">' + phase.name + ' (phase id: ' + phase.id + ')</button></li>');
+    });
+    $('#phaseList').find('button').each(function(){
+        this.addEventListener('click', function(){
+            $('#phaseSelectorButton').text($(this).text());
+            localStorage.setItem("phaseSelector", $(this).text());
         });
     });
 }

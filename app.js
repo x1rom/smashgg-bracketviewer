@@ -14,6 +14,9 @@ app.use(cors());
 app.get('/', (req,res)=>{
     res.render('index');
 });
+app.get('/bracket/?', (req,res)=>{
+
+});
 
 console.log('Bracket Viewer listening on Port %d', port);
 app.listen(port);
